@@ -1,8 +1,15 @@
 from typing import Annotated
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
-app = FastAPI()
 from handwriting_reader import Converter
+from io import BytesIO
+import logging
+
+app = FastAPI()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 converter = Converter()
 
 @app.get("/")
@@ -22,12 +29,13 @@ def root():
     return HTMLResponse(content=content)
 
 @app.post("/uploadfiles")
-async def converter(files: Annotated[
+async def file_converter(files: Annotated[
     list[UploadFile], File(description="Multiple files as upload file")
     ]):
 
     text = ""
     for file in files:
-        text += converter.convert(file.file)
+        content = BytesIO(await file.read())
+        text += converter.convert(content)
 
     return {"extracted": text}
