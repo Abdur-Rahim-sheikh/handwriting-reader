@@ -2,6 +2,8 @@ from typing import Annotated
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
 app = FastAPI()
+from handwriting_reader import Converter
+converter = Converter()
 
 @app.get("/")
 def root():
@@ -23,4 +25,9 @@ def root():
 async def converter(files: Annotated[
     list[UploadFile], File(description="Multiple files as upload file")
     ]):
-    return {"filenames": [file.filename for file in files]}
+
+    text = ""
+    for file in files:
+        text += converter.convert(file.file)
+
+    return {"extracted": text}
