@@ -17,7 +17,7 @@ class Converter:
         return "Unsupported data type"
     
     def convert_image(self, data: Image)->str:
-        return pytesseract.image_to_string(data)
+        return pytesseract.image_to_string(data, lang="ben+ara+eng")
     
 
 if __name__ == "__main__":
